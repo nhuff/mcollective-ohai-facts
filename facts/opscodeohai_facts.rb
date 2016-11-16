@@ -10,7 +10,11 @@ module MCollective
     class Opscodeohai_facts<Base
       def load_facts_from_source
         Log.debug("Reloading facts from Ohai")
-        oh = Ohai::System.new
+        config = Config.instance
+        extra_pp = config.pluginconf.fetch('opscodeohai.plugin_path',nil)
+        pp = Ohai::Config.default_plugin_path
+        pp = pp << extra_pp if extra_pp
+        oh = Ohai::System.new(plugin_path: pp)
         oh.all_plugins
 
         facts = {}
